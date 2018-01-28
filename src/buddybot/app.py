@@ -41,6 +41,9 @@ class Retort(object):
         else:
             self.second_term = second_term
 
+    def __str__(self):
+        return self.formatted()
+
     def formatted(self):
         """
         Returns a formatted string of this Retort
