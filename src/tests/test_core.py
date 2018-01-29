@@ -1,5 +1,5 @@
 """
-Test suite for BuddyBot app.py.
+Test suite for BuddyBot core.py
 """
 
 import random
