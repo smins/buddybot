@@ -1,10 +1,5 @@
 """
 The core BuddyBot Mk 3000 application code.
-
-All instances of The Joke are referring to the "I'm not your {buddy}, {pal}" meme from South Park
-See:
-https://www.urbandictionary.com/define.php?term=I%27m%20not%20your%20friend%2C%20buddy
-http://southpark.cc.com/clips/165191/im-not-your-friend-guy
 """
 
 import random
@@ -21,28 +16,39 @@ class Crawler(object):
         self.valid_openers = valid_openers
         self.regex_template = regex_template
 
-    def detect_joke(self, target_str):
+    def _match_template(self, target_str):
         """
-        Detects instances of The Joke that match the template and use valid openers
+        Detects instances of The Joke, returns their three components. Returns None on no-match.
 
-        Casts both the target & the valid openers to lowercase during the check
-        """
-        for opener in self.valid_openers:
-            cast_template = self.regex_template.format(opener=opener.lower())
-            if re.match(cast_template, target_str.lower()):
-                return True
-
-        return False
-
-    def split_joke(self, joke_str):
-        """
-        Splits known instances of The Joke into the template: opener, first term, and second term.
-
+        Components:
         opener: How the joke begins, typically "I'm not your"
         first_term: The first 'friend term' (e.g. buddy, pal, etc.) of the instance being split.
         second_term: The second term of a Joke instance, repeated in a Retort as the first term.
         """
-        pass
+        for opener in self.valid_openers:
+            # Ignore case during matching
+            pattern = re.compile(self.regex_template.format(opener=opener), flags=re.IGNORECASE)
+            match = re.match(pattern, target_str)
+            if match:
+                return match.group(1, 2, 3)
+
+        return None
+
+    def detect_joke(self, target_str):
+        """
+        Returns a bool indicating if a target_str is an instance of The Joke
+
+        Wrapper around _match_template
+        """
+        return bool(self._match_template(target_str=target_str))
+
+    def split_joke(self, joke_str):
+        """
+        Returns the three components of a given instance of The Joke.
+
+        Wrapper around _match_template
+        """
+        return self._match_template(joke_str)
 
 class Retort(object):
     """
@@ -52,6 +58,7 @@ class Retort(object):
     def __init__(self, opener, mirror_term, second_term=None, template=JOKE_PRINT_TEMPLATE):
         # Opener must be the same as parent comment to properly continue The Joke
         self.opener = opener
+        # The first term (mirror_term) must be the parent comment's second_term to continue The Joke
         self.mirror_term = mirror_term
         # Templates must have keywords 'opener', 'mirror_term', and 'second_term'
         self.template = template
@@ -60,6 +67,13 @@ class Retort(object):
             self.second_term = str(random.sample(FRIEND_TERMS, 1))
         else:
             self.second_term = second_term
+
+    def get_components(self):
+        """
+        Returns the opener, mirror_term, and second_term of this Retort as a tuple
+        """
+
+        return self.opener, self.mirror_term, self.second_term
 
     def formatted(self):
         """

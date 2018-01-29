@@ -18,10 +18,27 @@ class TestCrawler(object):
     # Pick a random opener, then pick random mirror_term and second_term,
     # different from each other.
     opener = str(random.sample(VALID_OPENERS, 1)[0])
-    mirror_term, second_term = random.sample(FRIEND_TERMS, 2)
+    first_term, second_term = random.sample(FRIEND_TERMS, 2)
 
-    crawler = Crawler(valid_openers=VALID_OPENERS,
-                      regex_template=JOKE_REGEX_TEMPLATE)
+    test_joke = JOKE_PRINT_TEMPLATE.format(opener=opener,
+                                           mirror_term=first_term,
+                                           second_term=second_term)
+
+    crawler_noparam = Crawler(valid_openers=VALID_OPENERS)
+    crawler_params = Crawler(valid_openers=VALID_OPENERS,
+                             regex_template=JOKE_REGEX_TEMPLATE)
+
+    def test_crawler_construct_noparam(self):
+        """
+        Tests that an object of type Crawler can be created without optional parameters
+        """
+        assert isinstance(self.crawler_noparam, Crawler)
+
+    def test_crawler_construct_params(self):
+        """
+        Tests that an object of type Crawler can be created with optional parameters
+        """
+        assert isinstance(self.crawler_params, Crawler)
 
     def test_detect_allopeners(self):
         """
@@ -29,9 +46,9 @@ class TestCrawler(object):
         """
         for opener in VALID_OPENERS:
             joke_string = JOKE_PRINT_TEMPLATE.format(opener=opener,
-                                                     mirror_term=self.mirror_term,
+                                                     mirror_term=self.first_term,
                                                      second_term=self.second_term)
-            assert self.crawler.detect_joke(joke_string)
+            assert self.crawler_params.detect_joke(joke_string)
 
     def test_detect_trueneg(self):
         """
@@ -44,13 +61,25 @@ class TestCrawler(object):
         ]
 
         for test_str in test_strings:
-            assert self.crawler.detect_joke(test_str) is False
+            assert self.crawler_params.detect_joke(test_str) is False
 
-    def test_split_allopeners(self):
+    def test_split_opener(self):
         """
-        Test that a Crawler can split instances of The Joke with any valid opener
+        Test that a Crawler can correctly split openers from Joke instances
         """
-        pass
+        assert self.opener == self.crawler_params.split_joke(self.test_joke)[0]
+
+    def test_split_first_term(self):
+        """
+        Test that a Crawler can split the first friend_term from Joke instances
+        """
+        assert self.first_term == self.crawler_params.split_joke(self.test_joke)[1]
+
+    def test_split_second_term(self):
+        """
+        Test that a Crawler can split the second friend_term from Joke instances
+        """
+        assert self.second_term == self.crawler_params.split_joke(self.test_joke)[2]
 
 class TestRetort(object):
     """
@@ -72,13 +101,13 @@ class TestRetort(object):
                                                 mirror_term=mirror_term,
                                                 second_term=second_term)
 
-    def test_retort_constructor_noparam(self):
+    def test_retort_construct_noparam(self):
         """
         Tests that an object of type Retort can be created without optional parameters
         """
         assert isinstance(self.retort_noparam, Retort)
 
-    def test_retort_constructor_params(self):
+    def test_retort_construct_params(self):
         """
         Tests that an object of type Retort can be created with optional parameters
         """
