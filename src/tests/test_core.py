@@ -3,6 +3,7 @@ Test suite for BuddyBot app.py.
 """
 
 import random
+from buddybot import SUMMON_KEYWORDS
 from buddybot import JOKE_PRINT_TEMPLATE
 from buddybot import JOKE_REGEX_TEMPLATE
 from buddybot import FRIEND_TERMS
@@ -28,6 +29,14 @@ class TestCrawler(object):
         "Hi I'm BuddyBot",
         "Do you wan't to be my friend?",
         "I like waffles."
+    ]
+
+    test_nonsummon = [
+        "!Buddy",
+        "!Wikibot",
+        "!",
+        "BuddyBot",
+        "BuddyBot3000"
     ]
 
     crawler_noparam = Crawler(valid_openers=VALID_OPENERS)
@@ -62,6 +71,20 @@ class TestCrawler(object):
         """
         for test_str in self.test_nonjokes:
             assert self.crawler_params.detect_joke(test_str) is False
+
+    def test_detect_allsummons(self):
+        """
+        Test that a Crawler correctly detects its summon_keywords.
+        """
+        for summon_kw in SUMMON_KEYWORDS:
+            assert self.crawler_params.detect_summons(summon_kw)
+
+    def test_detect_negsummons(self):
+        """
+        Test that a Crawler ignores non-summon keywords
+        """
+        for non_key in self.test_nonsummon:
+            assert self.crawler_params.detect_summons(non_key) is False
 
     def test_split_opener(self):
         """

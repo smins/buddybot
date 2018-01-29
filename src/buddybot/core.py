@@ -4,21 +4,29 @@ The core BuddyBot Mk 3000 application code.
 
 import random
 import re
+from buddybot import SUMMON_KEYWORDS
 from buddybot import JOKE_REGEX_TEMPLATE
 from buddybot import JOKE_PRINT_TEMPLATE
 from buddybot import FRIEND_TERMS
 
 class Crawler(object):
     """
-    Detects valid instances of The Joke and splits them into components. Tracks it's last match.
+    Detects valid instances of The Joke or the summons keyword.
+
+    Crawlers can split instances of The Joke into
+    Tracks it's last match.
     """
-    def __init__(self, valid_openers, regex_template=JOKE_REGEX_TEMPLATE):
+    def __init__(self, valid_openers,
+                 summon_kws=SUMMON_KEYWORDS,
+                 regex_template=JOKE_REGEX_TEMPLATE):
+
         self.valid_openers = valid_openers
         self.regex_template = regex_template
+        self.summon_kws=summon_kws
         self.last_match = None
         self.last_match_components = None
 
-    def _match_template(self, target_str):
+    def _match_joke_template(self, target_str):
         """
         Detects instances of The Joke, returns their three components. Returns None on no-match.
 
@@ -39,21 +47,28 @@ class Crawler(object):
 
         return None
 
+    def detect_summons(self, target_str):
+        """
+        Returns a bool indicating if target_str is named summons of BuddyBot3000
+        """
+        for summon_kw in self.summon_kws:
+            pattern = re.compile(summon_kw, flags=re.IGNORECASE)
+            if re.match(pattern, target_str):
+                return True
+
+        return False
+
     def detect_joke(self, target_str):
         """
         Returns a bool indicating if a target_str is an instance of The Joke
-
-        Wrapper around _match_template
         """
-        return bool(self._match_template(target_str=target_str))
+        return bool(self._match_joke_template(target_str=target_str))
 
     def split_joke(self, joke_str):
         """
         Returns the three components of a given instance of The Joke. Returns None if not The Joke.
-
-        Wrapper around _match_template
         """
-        return self._match_template(joke_str)
+        return self._match_joke_template(joke_str)
 
 class Retort(object):
     """

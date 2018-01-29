@@ -8,6 +8,18 @@ http://southpark.cc.com/clips/165191/im-not-your-friend-guy
 Set constants that define The Joke
 """
 
+TARGET_SUBREDDITS = [
+    'Automate',
+    'AwesomeBots',
+    'AInotHuman',
+
+]
+
+SUMMON_KEYWORDS = [
+    '!BuddyBot3000',
+    '!BuddyBot'
+]
+
 # Templates to detect & print The Joke
 # Use raw strings for regex
 JOKE_REGEX_TEMPLATE = r"({opener}) ([a-zA-Z]+), ([a-zA-Z]+)."
