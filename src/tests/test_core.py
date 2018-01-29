@@ -39,8 +39,9 @@ class TestCrawler(object):
         "BuddyBot3000"
     ]
 
-    crawler_noparam = Crawler(valid_openers=VALID_OPENERS)
-    crawler_params = Crawler(valid_openers=VALID_OPENERS,
+    crawler_noparam = Crawler(summon_kws=SUMMON_KEYWORDS, valid_openers=VALID_OPENERS)
+    crawler_params = Crawler(summon_kws=SUMMON_KEYWORDS,
+                             valid_openers=VALID_OPENERS,
                              regex_template=JOKE_REGEX_TEMPLATE)
 
     def test_crawler_construct_noparam(self):
@@ -55,7 +56,7 @@ class TestCrawler(object):
         """
         assert isinstance(self.crawler_params, Crawler)
 
-    def test_detect_allopeners(self):
+    def test_crawler_detect_allopeners(self):
         """
         Test that a Crawler can detect instances of The Joke with any valid opener.
         """
@@ -65,40 +66,49 @@ class TestCrawler(object):
                                                      second_term=self.second_term)
             assert self.crawler_params.detect_joke(joke_string)
 
-    def test_detect_trueneg(self):
+    def test_crawler_detect_trueneg(self):
         """
         Test that a Crawler correctly ignores non-Joke strings.
         """
         for test_str in self.test_nonjokes:
             assert self.crawler_params.detect_joke(test_str) is False
 
-    def test_detect_allsummons(self):
+    def test_crawler_detect_allsummons(self):
         """
         Test that a Crawler correctly detects its summon_keywords.
         """
         for summon_kw in SUMMON_KEYWORDS:
             assert self.crawler_params.detect_summons(summon_kw)
 
-    def test_detect_negsummons(self):
+    def test_crawler_detect_negsummons(self):
         """
         Test that a Crawler ignores non-summon keywords
         """
         for non_key in self.test_nonsummon:
             assert self.crawler_params.detect_summons(non_key) is False
 
-    def test_split_opener(self):
+    def test_crawler_create_joke(self):
+        """
+        Test that a crawler succesfully generates a random instance of the Joke.
+
+        Dependent on the test_crawler_detect_allopeners test passing
+        """
+        random_retort = self.crawler_params.gen_random_retort()
+        assert self.crawler_params.detect_joke(random_retort.formatted())
+
+    def test_crawler_split_opener(self):
         """
         Test that a Crawler can correctly split openers from Joke instances
         """
         assert self.opener == self.crawler_params.split_joke(self.test_joke)[0]
 
-    def test_split_first_term(self):
+    def test_crawler_split_first_term(self):
         """
         Test that a Crawler can split the first friend_term from Joke instances
         """
         assert self.first_term == self.crawler_params.split_joke(self.test_joke)[1]
 
-    def test_split_second_term(self):
+    def test_crawler_split_second_term(self):
         """
         Test that a Crawler can split the second friend_term from Joke instances
         """

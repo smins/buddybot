@@ -4,25 +4,26 @@ The core BuddyBot Mk 3000 application code.
 
 import random
 import re
-from buddybot import SUMMON_KEYWORDS
 from buddybot import JOKE_REGEX_TEMPLATE
 from buddybot import JOKE_PRINT_TEMPLATE
 from buddybot import FRIEND_TERMS
 
 class Crawler(object):
     """
-    Detects valid instances of The Joke or the summons keyword.
+    Detects valid instances of The Joke or the summons keywords.
 
-    Crawlers can split instances of The Joke into
+    Crawlers can split detected instances of The Joke into their keywords, or generate a random
+    instance of the joke when summoned.
+
     Tracks it's last match.
     """
-    def __init__(self, valid_openers,
-                 summon_kws=SUMMON_KEYWORDS,
+    def __init__(self, summon_kws,
+                 valid_openers,
                  regex_template=JOKE_REGEX_TEMPLATE):
 
+        self.summon_kws = summon_kws
         self.valid_openers = valid_openers
         self.regex_template = regex_template
-        self.summon_kws=summon_kws
         self.last_match = None
         self.last_match_components = None
 
@@ -63,6 +64,15 @@ class Crawler(object):
         Returns a bool indicating if a target_str is an instance of The Joke
         """
         return bool(self._match_joke_template(target_str=target_str))
+
+    def gen_random_retort(self):
+        """
+        Randomly selects a valid opener and friend terms return a formatted Joke
+        """
+        opener = str(random.sample(self.valid_openers, 1)[0])
+        first_term, second_term = random.sample(FRIEND_TERMS, 2)
+
+        return Retort(opener=opener, mirror_term=first_term, second_term=second_term)
 
     def split_joke(self, joke_str):
         """
