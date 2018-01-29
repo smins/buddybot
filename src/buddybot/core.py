@@ -10,11 +10,13 @@ from buddybot import FRIEND_TERMS
 
 class Crawler(object):
     """
-    Detects valid instances of The Joke and splits them into components
+    Detects valid instances of The Joke and splits them into components. Tracks it's last match.
     """
     def __init__(self, valid_openers, regex_template=JOKE_REGEX_TEMPLATE):
         self.valid_openers = valid_openers
         self.regex_template = regex_template
+        self.last_match = None
+        self.last_match_components = None
 
     def _match_template(self, target_str):
         """
@@ -30,7 +32,10 @@ class Crawler(object):
             pattern = re.compile(self.regex_template.format(opener=opener), flags=re.IGNORECASE)
             match = re.match(pattern, target_str)
             if match:
-                return match.group(1, 2, 3)
+                self.last_match = match.group(0)
+                self.last_match_components = match.group(1, 2, 3)
+
+                return self.last_match_components
 
         return None
 
@@ -44,7 +49,7 @@ class Crawler(object):
 
     def split_joke(self, joke_str):
         """
-        Returns the three components of a given instance of The Joke.
+        Returns the three components of a given instance of The Joke. Returns None if not The Joke.
 
         Wrapper around _match_template
         """

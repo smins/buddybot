@@ -7,8 +7,8 @@ from buddybot import JOKE_PRINT_TEMPLATE
 from buddybot import JOKE_REGEX_TEMPLATE
 from buddybot import FRIEND_TERMS
 from buddybot import VALID_OPENERS
-from buddybot.app import Crawler
-from buddybot.app import Retort
+from buddybot.core import Crawler
+from buddybot.core import Retort
 
 class TestCrawler(object):
     """
@@ -23,6 +23,12 @@ class TestCrawler(object):
     test_joke = JOKE_PRINT_TEMPLATE.format(opener=opener,
                                            mirror_term=first_term,
                                            second_term=second_term)
+
+    test_nonjokes = [
+        "Hi I'm BuddyBot",
+        "Do you wan't to be my friend?",
+        "I like waffles."
+    ]
 
     crawler_noparam = Crawler(valid_openers=VALID_OPENERS)
     crawler_params = Crawler(valid_openers=VALID_OPENERS,
@@ -54,13 +60,7 @@ class TestCrawler(object):
         """
         Test that a Crawler correctly ignores non-Joke strings.
         """
-        test_strings = [
-            "Hi I'm BuddyBot",
-            "Do you wan't to be my friend?",
-            "I like waffles."
-        ]
-
-        for test_str in test_strings:
+        for test_str in self.test_nonjokes:
             assert self.crawler_params.detect_joke(test_str) is False
 
     def test_split_opener(self):
