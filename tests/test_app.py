@@ -7,7 +7,7 @@ class TestApp(object):
     """
     Test class for general BuddyBot app / praw operations
     """
-    test_reddit_ini = praw.Reddit('buddybot')
+    test_reddit_ini = praw.Reddit('BUDDYBOT', user_agent='buddybot test agent')
 
     def test_construct_from_ini(self):
         """
