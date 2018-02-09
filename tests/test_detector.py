@@ -2,7 +2,7 @@
 Test suite for detector.py
 """
 
-from buddybot import Detector
+from buddybot import Detector, Joke
 
 class TestDetector(object):
     """
@@ -131,11 +131,20 @@ class TestDetector(object):
 
     def test_get_last_match(self):
         """
-        Test that a detector can return its last match as a string.
+        Test that a detector can return its last match as a Joke
         """
         test_match = "I'm not your buddy, pal."
         self.detector.detect_joke(test_match)
-        assert self.detector.get_last_match() == test_match
+        assert isinstance(self.detector.get_last_match(), Joke)
+
+    def test_get_last_match_str(self):
+        """
+        Test that a detector can return its last matched Joke as a string.
+        """
+        test_match = "I'm not your buddy, pal."
+        self.detector.detect_joke(test_match)
+        print(test_match, self.detector.get_last_match_str())
+        assert self.detector.get_last_match_str() == test_match
 
     def test_get_last_match_comps(self):
         """

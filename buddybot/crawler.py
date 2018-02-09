@@ -2,7 +2,8 @@
 BuddyBot Crawler
 """
 import praw
-from buddybot import Detector, Generator
+from .detector import Detector
+from .generator import JokeGenerator
 
 class Crawler(object):
     """
@@ -16,7 +17,7 @@ class Crawler(object):
         self.ignore_case = ignore_case
 
         self.detector = Detector(ignore_case=self.ignore_case)
-        self.generator = Generator()
+        self.generator = JokeGenerator()
 
         # generator that yields new threads
         self._submission_gen = self._create_sub_generator()
@@ -45,7 +46,6 @@ class Crawler(object):
         while submission is not None:
             self.crawl_submission(submission)
 
-        return None
 
     def crawl_submission(self, submission):
         """
@@ -62,11 +62,11 @@ class Crawler(object):
         """
 
         if self.detector.detect_summon(comment.body):
-            reply = self.generator.get_random()
+            reply = self.generator.get_random_joke()
 
         elif self.detector.detect_joke(comment.body):
             joke_comps = self.detector.get_last_match_comps()
-            reply = self.generator.get_response(components=joke_comps)
+            reply = self.generator.get_response_joke(components=joke_comps)
 
         # TODO Post reply using anti-abuse functions
         print("Comment: {comment} \n Reply: {reply}".format(comment=comment, reply=reply))

@@ -2,7 +2,7 @@
 BuddyBot Detector
 """
 import re
-import buddybot
+from .joke import Joke, VALID_OPENERS
 
 class Detector(object):
     """
@@ -15,7 +15,7 @@ class Detector(object):
 
         # Capture groups allow extraction of joke components
         self.joke_regex = r"({opener}) ([a-zA-Z]+), ([a-zA-Z]+)."
-        self.valid_openers = buddybot.VALID_OPENERS
+        self.valid_openers = VALID_OPENERS
 
         self.summon_kws = [
             '!BuddyBot3000',
@@ -44,9 +44,7 @@ class Detector(object):
             pattern = re.compile(self.joke_regex.format(opener=opener), flags=flags)
             match = re.match(pattern, target_str)
             if match:
-                self.last_match = match.group(0)
-                self.last_match_components = match.group(1, 2, 3)
-
+                self.last_match = Joke(*match.group(1, 2, 3))
                 return True
 
         return False
@@ -65,13 +63,19 @@ class Detector(object):
 
     def get_last_match(self):
         """
-        Returns the last matched joke as a string.
+        Returns the last matched Joke.
         """
         return self.last_match
 
+    def get_last_match_str(self):
+        """
+        Returns the last matched Joke as a string.
+        """
+        return self.last_match.get_str()
+
     def get_last_match_comps(self):
         """
-        Returns the last match as a tuple of it's components:
+        Returns the last matched Joke's components:
         (opener, first_term, second_term)
         """
-        return self.last_match_components
+        return self.last_match.get_comps()
