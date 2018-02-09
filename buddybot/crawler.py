@@ -63,10 +63,9 @@ class Crawler(object):
 
         if self.detector.detect_summon(comment.body):
             reply = self.generator.get_random_joke()
+            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body, reply=reply))
 
         elif self.detector.detect_joke(comment.body):
             joke_comps = self.detector.get_last_match_comps()
             reply = self.generator.get_response_joke(components=joke_comps)
-
-        # TODO Post reply using anti-abuse functions
-        print("Comment: {comment} \n Reply: {reply}".format(comment=comment, reply=reply))
+            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body, reply=reply))

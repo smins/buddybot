@@ -3,7 +3,7 @@ The application code needed to run BuddyBot.
 """
 import collections
 import praw
-from .crawler import Crawler
+from buddybot import Crawler
 
 TARGET_SUBREDDITS = [
     'Automate',
@@ -49,7 +49,9 @@ def main():
     reddit.read_only = True
 
     for subreddit in LARGE_SUBREDDITS:
-        crawler = Crawler(subreddit=subreddit, submission_limit=100, ignore_case=True)
+        crawler = Crawler(subreddit=reddit.subreddit(subreddit),
+                          submission_limit=100,
+                          ignore_case=True)
         crawler.crawl_subreddit()
 
 if __name__ == '__main__':
