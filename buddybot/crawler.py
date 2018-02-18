@@ -61,6 +61,9 @@ class Crawler(object):
         Determines if the body of a praw comment is a summon or Joke, and replies accordingly.
         """
 
+        # TODO: Add logging
+        # TODO: Add anti-abuse submission
+
         if self.detector.detect_summon(comment.body):
             reply = self.generator.get_random_joke()
             print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body, reply=reply))

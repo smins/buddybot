@@ -52,6 +52,7 @@ def main():
         crawler = Crawler(subreddit=reddit.subreddit(subreddit),
                           submission_limit=100,
                           ignore_case=True)
+        # TODO Add logging
         crawler.crawl_subreddit()
 
 if __name__ == '__main__':

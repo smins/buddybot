@@ -9,7 +9,7 @@ class JokeGenerator(object):
     Generates retorts to the preposterous statement that a user is its buddy, pal, or friend.
     """
     def __init__(self):
-        self.template = "{opener} {first_term}, {second_term}."
+        pass
 
     def get_response_joke(self, components):
         """
