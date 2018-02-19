@@ -13,27 +13,21 @@ TARGET_SUBREDDITS = [
 ]
 
 LARGE_SUBREDDITS = [
-    'worldnews',
     'funny',
     'pics',
     'jokes',
     'sports',
     'askreddit',
     'videos',
-    'todayilearned',
     'gaming',
     'movies',
-    'news',
     'gifs',
     'mildlyinteresting',
     'aww',
     'Showerthoughts',
     'television',
-    'science',
     'OldSchoolCool',
     'IAmA',
-    'Documentaries',
-    'explainlikeimfive',
 ]
 
 # Needed for anti-abuse functions
@@ -50,9 +44,11 @@ def main():
 
     for subreddit in LARGE_SUBREDDITS:
         crawler = Crawler(subreddit=reddit.subreddit(subreddit),
-                          submission_limit=100,
+                          sub_proc_limit=100,
+                          comment_proc_limit=10000,
                           ignore_case=True)
         # TODO Add logging
+        print("Processing /r/{subreddit}".format(subreddit=subreddit))
         crawler.crawl_subreddit()
 
 if __name__ == '__main__':

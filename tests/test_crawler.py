@@ -10,7 +10,10 @@ class TestCrawler(object):
     """
     test_subreddit = 'BuddyBot'
 
-    crawler = Crawler(subreddit=test_subreddit, submission_limit=100, ignore_case=True)
+    crawler = Crawler(subreddit=test_subreddit,
+                      sub_proc_limit=100,
+                      comment_proc_limit=1000,
+                      ignore_case=True)
 
     def test_construct(self):
         """

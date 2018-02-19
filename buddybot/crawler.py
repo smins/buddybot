@@ -9,52 +9,70 @@ class Crawler(object):
     """
     Crawlers wrap processing logic around the input source - a subreddit in this case
     """
-    def __init__(self, subreddit, submission_limit=100, ignore_case=True):
+    def __init__(self, subreddit, sub_proc_limit=100, comment_proc_limit=None, ignore_case=True):
 
         # A praw reddit.subreddit
         self.subreddit = subreddit
-        self.submission_limit = submission_limit
+        self.sub_proc_limit = sub_proc_limit
+        self.comment_proc_limit = comment_proc_limit
         self.ignore_case = ignore_case
 
         self.detector = Detector(ignore_case=self.ignore_case)
         self.generator = JokeGenerator()
 
         # generator that yields new threads
-        self._submission_gen = self._create_sub_generator()
+        self._sub_gen = self._create_sub_generator()
 
     def _create_sub_generator(self):
         """
-        Returns a generator that yields the next submission in this subreddit's stream.
-        After dispensing thread_limit submissions, it will yield None
-        """
-        outputs = 0
-        while outputs < self.submission_limit:
-            try:
-                yield next(self.subreddit.stream.submissions())
-                outputs += 1
-            except StopIteration:
-                yield None
-                break
+        Returns a generator that yields submissions from the 'hot' list of the crawler's subreddit
 
-        yield None
+        Used in the constructor
+        """
+        for sub in self.subreddit.hot(limit=self.sub_proc_limit):
+            yield sub
+
+        return
 
     def crawl_subreddit(self):
         """
-        Process the subreddit this Crawler was constructed with.
-        """
-        submission = next(self._submission_gen)
-        while submission is not None:
-            self.crawl_submission(submission)
-
-
-    def crawl_submission(self, submission):
-        """
-        Expand the comment trees of a praw submission, then process its comments.
+        Crawlers the subreddit this Crawler was constructed
         """
 
-        submission.comments.replace_more(limit=None)
+        subs_procd = 0
+        try:
+            # Grab the next submission from the generator
+            target_submission = next(self._sub_gen)
+            while target_submission is not None:
+                self.process_submission(target_submission)
+
+                subs_procd += 1
+                if subs_procd % 10 == 0:
+                    print(target_submission.title)
+                    print("Subs processed: {0}".format(subs_procd))
+
+                target_submission = next(self._sub_gen)
+
+        except StopIteration:
+            # Reached thread limit for this test_subreddit, so move on
+            return
+
+    def process_submission(self, submission):
+        """
+        Iterativelly process the comments of a praw submission
+        """
+
+        comments_procd = 0
+        # Expand the comment forest up to the comment_proc_limit
+        submission.comments.replace_more(limit=self.comment_proc_limit)
         for comment in submission.comments.list():
+            comments_procd += 1
             self.process_comment(comment)
+
+            comments_procd += 1
+            if comments_procd % 100 == 0:
+                print(comment.body)
+                print("Comments processed: {0}".format(comments_procd))
 
     def process_comment(self, comment):
         """
@@ -65,10 +83,14 @@ class Crawler(object):
         # TODO: Add anti-abuse submission
 
         if self.detector.detect_summon(comment.body):
-            reply = self.generator.get_random_joke()
-            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body, reply=reply))
+            bb_response = self.generator.get_random_joke().get_str()
+            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body,
+                                                                reply=bb_response))
 
         elif self.detector.detect_joke(comment.body):
             joke_comps = self.detector.get_last_match_comps()
-            reply = self.generator.get_response_joke(components=joke_comps)
-            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body, reply=reply))
+            bb_response = self.generator.get_response_joke(components=joke_comps).get_str()
+            print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body,
+                                                                reply=bb_response))
+
+        return

@@ -15,7 +15,7 @@ class TestGenerator(object):
 
     def test_random_joke(self):
         """
-        Use a Detector to test that a JokeGenerator can create a valid random retort
+        Use a Detector to test that a JokeGenerator can create a valid random joke
 
         Dependent on test_detector.py
         """
@@ -26,7 +26,7 @@ class TestGenerator(object):
         """
         Test that a JokeGenerator can create a proper response from components.
 
-        Dependent on test_random_retort
+        Dependent on test_random_joke
         Dependent on test_detector.py
         """
         # Create a random response and extract its components
