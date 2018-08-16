@@ -61,21 +61,8 @@ class Detector(object):
 
         return False
 
-    def get_last_match(self):
+    def get_last_match(self) -> Joke:
         """
         Returns the last matched Joke.
         """
         return self.last_match
-
-    def get_last_match_str(self):
-        """
-        Returns the last matched Joke as a string.
-        """
-        return self.last_match.get_str()
-
-    def get_last_match_comps(self):
-        """
-        Returns the last matched Joke's components:
-        (opener, first_term, second_term)
-        """
-        return self.last_match.get_comps()
