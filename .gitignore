@@ -1,3 +1,8 @@
+# Keys
+keys/
+keys
+*.key
+
 # User-defined
 praw.ini
 
@@ -102,3 +107,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# sqllite dbs (local testing)
+*.sqllite
