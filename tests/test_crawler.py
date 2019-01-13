@@ -11,7 +11,7 @@ class TestCrawler(object):
     test_subreddit = 'BuddyBot'
 
     crawler = Crawler(subreddit=test_subreddit,
-                      sub_proc_limit=100,
+                      thread_proc_limit=100,
                       comment_proc_limit=1000,
                       ignore_case=True)
 

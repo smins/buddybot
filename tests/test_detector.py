@@ -136,23 +136,3 @@ class TestDetector(object):
         test_match = "I'm not your buddy, pal."
         self.detector.detect_joke(test_match)
         assert isinstance(self.detector.get_last_match(), Joke)
-
-    def test_get_last_match_str(self):
-        """
-        Test that a detector can return its last matched Joke as a string.
-        """
-        test_match = "I'm not your buddy, pal."
-        self.detector.detect_joke(test_match)
-        print(test_match, self.detector.get_last_match_str())
-        assert self.detector.get_last_match_str() == test_match
-
-    def test_get_last_match_comps(self):
-        """
-        Test that a detector can return its last match as its three components.
-        """
-        test_match = "I'm not your buddy, pal."
-        test_comps = ("I'm not your", "buddy", "pal")
-
-        self.detector.detect_joke(test_match)
-        comps = self.detector.get_last_match_comps()
-        assert comps == test_comps

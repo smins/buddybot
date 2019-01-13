@@ -7,13 +7,13 @@ from .generator import JokeGenerator
 
 class Crawler(object):
     """
-    Crawlers wrap processing logic around the input source - a subreddit in this case
+    Crawlers wrap processing logic around the input source - a subreddit
     """
-    def __init__(self, subreddit, sub_proc_limit=100, comment_proc_limit=None, ignore_case=True):
+    def __init__(self, subreddit, thread_proc_limit=100, comment_proc_limit=None, ignore_case=True):
 
         # A praw reddit.subreddit
         self.subreddit = subreddit
-        self.sub_proc_limit = sub_proc_limit
+        self.thread_proc_limit = thread_proc_limit
         self.comment_proc_limit = comment_proc_limit
         self.ignore_case = ignore_case
 
@@ -21,16 +21,16 @@ class Crawler(object):
         self.generator = JokeGenerator()
 
         # generator that yields new threads
-        self._sub_gen = self._create_sub_generator()
+        self._thread_gen = self._create_thread_generator()
 
-    def _create_sub_generator(self):
+    def _create_thread_generator(self):
         """
         Returns a generator that yields submissions from the 'hot' list of the crawler's subreddit
 
         Used in the constructor
         """
-        for sub in self.subreddit.hot(limit=self.sub_proc_limit):
-            yield sub
+        for thread in self.subreddit.hot(limit=self.thread_proc_limit):
+            yield thread
 
         return
 
@@ -39,22 +39,22 @@ class Crawler(object):
         Crawlers the subreddit this Crawler was constructed
         """
 
-        subs_procd = 0
+        threads_procd = 0
         try:
-            # Grab the next submission from the generator
-            target_submission = next(self._sub_gen)
-            while target_submission is not None:
-                self.process_submission(target_submission)
+            # Grab the next thread from the generator
+            target_thread = next(self._thread_gen)
+            while target_thread is not None:
+                self.process_submission(target_thread)
 
-                subs_procd += 1
-                if subs_procd % 10 == 0:
-                    print(target_submission.title)
-                    print("Subs processed: {0}".format(subs_procd))
+                threads_procd += 1
+                if threads_procd % 10 == 0:
+                    print(target_thread.title)
+                    print("Threads processed: {0}".format(threads_procd))
 
-                target_submission = next(self._sub_gen)
+                target_thread = next(self._thread_gen)
 
         except StopIteration:
-            # Reached thread limit for this test_subreddit, so move on
+            # Reached thread limit for this subreddit, so move on
             return
 
     def process_submission(self, submission):
@@ -70,6 +70,7 @@ class Crawler(object):
             self.process_comment(comment)
 
             comments_procd += 1
+            # TODO: Remove Testing output
             if comments_procd % 100 == 0:
                 print(comment.body)
                 print("Comments processed: {0}".format(comments_procd))
@@ -84,13 +85,17 @@ class Crawler(object):
 
         if self.detector.detect_summon(comment.body):
             bb_response = self.generator.get_random_joke().get_str()
+            print("******************")
             print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body,
                                                                 reply=bb_response))
+            print("******************")
 
         elif self.detector.detect_joke(comment.body):
-            joke_comps = self.detector.get_last_match_comps()
+            joke_comps = self.detector.get_last_match().get_comps()
             bb_response = self.generator.get_response_joke(components=joke_comps).get_str()
+            print("******************")
             print("Comment: {comment} \n Reply: {reply}".format(comment=comment.body,
                                                                 reply=bb_response))
+            print("******************")
 
         return

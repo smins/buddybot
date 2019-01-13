@@ -33,13 +33,14 @@ class TestGenerator(object):
         random_joke_str = self.generator.get_random_joke().get_str()
         self.detector.detect_joke(random_joke_str)
 
-        comps_orig = self.detector.get_last_match_comps()
+        comps_orig = self.detector.get_last_match().get_comps()
 
         # Create the response and check that it a valid retort
         response_str = self.generator.get_response_joke(comps_orig).get_str()
         assert self.detector.detect_joke(response_str)
 
-        comps_new = self.detector.get_last_match_comps()
+        # Check that the term-swapping inherent to the joke is working
+        comps_new = self.detector.get_last_match().get_comps()
         assert all([
             comps_orig[0] == comps_new[0],
             comps_orig[2] == comps_new[1]

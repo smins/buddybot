@@ -54,7 +54,7 @@ class Joke(object):
         self.second_term = second_term
 
         self.template = r"{opener} {first_term}, {second_term}."
-        
+
     def __str__(self):
         return self.template.format(opener=self.opener,
                                     first_term=self.first_term,
